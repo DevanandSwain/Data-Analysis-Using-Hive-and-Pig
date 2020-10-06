@@ -1,13 +1,19 @@
 Data Preparation:
 
 To create a new database 
+
+Code:
 create database if not exists fbdata; 
 
+
 To use the database
+
 Code:
 use fbdata;
 
-To create an empty table in the database and copy the dataset into the empty table
+
+To create an empty table in the database 
+
 Code:
 CREATE TABLE IF NOT EXISTS fbdata.facebook_data (
 id INT COMMENT 'Unique id for each user',
@@ -31,16 +37,33 @@ FIELDS TERMINATED BY ','
 STORED AS TEXTFILE 
 LOCATION '/user/hive/warehouse/fbdata.db/facebook_data';
 
+
 To load the data into the facebook_data table 
+
 Code:
 LOAD DATA LOCAL INPATH 'pseudo_facebook.csv' OVERWRITE INTO TABLE facebook_data;
-Output:
  
 
 To check if the data has been inserted into the table
+
 Code:
 select * from facebook_data limit 10;
+
+
 Output:
+OK
+2094382	14	19	1999	11	male	266	0	0	0	0	0	0	0	0
+1192601	14	2	1999	11	female	6	0	0	0	0	0	0	0	0
+2083884	14	16	1999	11	male	13	0	0	0	0	0	0	0	0
+1203168	14	25	1999	12	female	93	0	0	0	0	0	0	0	0
+1733186	14	4	1999	12	male	82	0	0	0	0	0	0	0	0
+1524765	14	1	1999	12	male	15	0	0	0	0	0	0	0	0
+1136133	13	14	2000	1	male	12	0	0	0	0	0	0	0	0
+1680361	13	4	2000	1	female	0	0	0	0	0	0	0	0	0
+1365174	13	1	2000	1	male	81	0	0	0	0	0	0	0	0
+1712567	13	2	2000	2	male	171	0	0	0	0	0	0	0	0
+Time taken: 1.108 seconds, Fetched: 10 row(s)
+
 
 
 Analysis:
