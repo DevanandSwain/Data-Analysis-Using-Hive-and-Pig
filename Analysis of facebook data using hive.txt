@@ -1,0 +1,480 @@
+Data Preparation:
+
+To create a new database 
+create database if not exists fbdata; 
+
+To use the database
+Code:
+use fbdata;
+
+To create an empty table in the database and copy the dataset into the empty table
+Code:
+CREATE TABLE IF NOT EXISTS fbdata.facebook_data (
+id INT COMMENT 'Unique id for each user',
+age INT COMMENT 'User age between 13-113',
+dob_day INT COMMENT 'Day of Birth',
+dob_year INT COMMENT 'Year of Birth',  
+dob_month INT COMMENT 'Month of Birth',
+gender STRING COMMENT 'Gender of user',
+tenure INT COMMENT 'Time(in days) that a user has been on facebook',
+friend_count INT COMMENT 'Total number of friends of a user',
+friendships_initiated INT COMMENT 'Total number of friend requests sent by a user',
+likes INT COMMENT 'Total number of likes given by a user',
+likes_received INT COMMENT 'Total number of likes received by a user', 
+mobile_likes INT COMMENT 'Total number of likes given by a user through mobile',
+mobile_likes_received INT COMMENT 'Total number of likes received by a user through mobile',
+www_likes INT COMMENT 'Total number of likes given by a user through web browser',
+www_likes_received INT COMMENT 'Total number of likes received by a user through web browser'
+)
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE 
+LOCATION '/user/hive/warehouse/fbdata.db/facebook_data';
+
+To load the data into the facebook_data table 
+Code:
+LOAD DATA LOCAL INPATH 'pseudo_facebook.csv' OVERWRITE INTO TABLE facebook_data;
+Output:
+ 
+
+To check if the data has been inserted into the table
+Code:
+select * from facebook_data limit 10;
+Output:
+
+
+Analysis:
+
+1. To find the total number of users in the dataset
+
+Code:
+select count(*) from facebook_data;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0019, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0019/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0019
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 15:28:15,980 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 15:28:41,900 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.88 sec
+2020-10-03 15:29:06,037 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 5.31 sec
+MapReduce Total cumulative CPU time: 5 seconds 310 msec
+Ended Job = job_1601735549002_0019
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 5.31 sec   HDFS Read: 5226420 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 5 seconds 310 msec
+OK
+99003
+Time taken: 88.256 seconds, Fetched: 1 row(s)
+
+
+Conclusion:
+Though the count function does not fetch unique rows but since the id column in our dataset is a primary key we can conclude that there are 99,003 users in the dataset.
+
+
+
+2. To find the number of facebook users above the age of 25
+
+Code:
+select count(*) from facebook_data where age > 25;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0020, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0020/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0020
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 15:36:11,956 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 15:36:32,498 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 3.29 sec
+2020-10-03 15:36:51,468 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 5.69 sec
+MapReduce Total cumulative CPU time: 5 seconds 690 msec
+Ended Job = job_1601735549002_0020 
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 5.69 sec   HDFS Read: 5227307 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 5 seconds 690 msec
+OK
+56676
+Time taken: 62.195 seconds, Fetched: 1 row(s) 
+
+
+Conclusion:
+The number of facebook users whose age is greater than 25 is 56,676.
+
+
+
+3. To check if male users tend to have more friends, or female users
+
+i.) To find the total number of friends for male users 
+
+Code:
+select sum(friend_count) from facebook_data where gender = 'male';
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0021, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0021/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0021
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 15:47:14,898 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 15:47:40,688 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 5.02 sec
+2020-10-03 15:48:05,269 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 8.48 sec
+MapReduce Total cumulative CPU time: 8 seconds 480 msec
+Ended Job = job_1601735549002_0021
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 8.48 sec   HDFS Read: 5227635 HDFS Write: 8 SUCCESS
+Total MapReduce CPU Time Spent: 8 seconds 480 msec
+OK
+9666787
+Time taken: 80.238 seconds, Fetched: 1 row(s) 
+
+
+ii.) To check the total number of friends for female users 
+
+Code:
+select sum(friend_count) from facebook_data where gender = 'female';
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0022, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0022/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0022
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 15:50:58,087 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 15:51:24,333 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.66 sec
+2020-10-03 15:51:49,402 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 8.19 sec
+MapReduce Total cumulative CPU time: 8 seconds 190 msec
+Ended Job = job_1601735549002_0022
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 8.19 sec   HDFS Read: 5227643 HDFS Write: 8 SUCCESS
+Total MapReduce CPU Time Spent: 8 seconds 190 msec
+OK
+9740258
+Time taken: 75.845 seconds, Fetched: 1 row(s)
+ 
+
+Conclusion:
+The total number of friends for male users is and female users is 9,666,787 and 9,740,258, respectively.
+Therefore, we can conclude that female users tend to have more friends.
+
+
+
+4. To find the number of likes received by young members opposed to older members
+
+i.) To check the total number of likes received by young members
+
+Code:
+select sum(likes_received) from facebook_data where age <= 35;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0023, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0023/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0023
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 15:57:26,138 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 15:57:49,986 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.11 sec
+2020-10-03 15:58:15,147 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 7.47 sec
+MapReduce Total cumulative CPU time: 7 seconds 470 msec
+Ended Job = job_1601735549002_0023
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 7.47 sec   HDFS Read: 5227415 HDFS Write: 9 SUCCESS
+Total MapReduce CPU Time Spent: 7 seconds 470 msec
+OK
+10144316
+Time taken: 77.064 seconds, Fetched: 1 row(s) 
+
+
+ii.) To check the total number of likes received by older members
+
+Code:
+select sum(likes_received) from facebook_data where age >= 55;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0024, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0024/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0024
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 16:01:15,994 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 16:01:39,545 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.21 sec
+2020-10-03 16:02:03,288 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 7.66 sec
+MapReduce Total cumulative CPU time: 7 seconds 660 msec
+Ended Job = job_1601735549002_0024 
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 7.66 sec   HDFS Read: 5227427 HDFS Write: 8 SUCCESS
+Total MapReduce CPU Time Spent: 7 seconds 660 msec
+OK
+2087283
+Time taken: 76.619 seconds, Fetched: 1 row(s)
+
+
+Conclusion:
+The total number of likes received by young members (age <= 35) and older members (age >= 55) is 10,144,316 and 2,087,283, respectively.
+
+
+
+5. To find the count of facebook users for each birthday month
+
+Code:
+select dob_month, count(*) from facebook_data group by dob_month;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0025, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0025/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0025
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 16:06:02,351 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 16:06:26,575 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 3.76 sec
+2020-10-03 16:06:50,473 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 6.98 sec
+MapReduce Total cumulative CPU time: 6 seconds 980 msec
+Ended Job = job_1601735549002_0025 
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 6.98 sec   HDFS Read: 5226819 HDFS Write: 88 SUCCESS
+Total MapReduce CPU Time Spent: 6 seconds 980 msec
+OK
+1	11772
+2	7632
+3	8110
+4	7810
+5	8271
+6	7607
+7	8021
+8	8266
+9	7939
+10	8476
+11	7205
+12	7894
+Time taken: 75.87 seconds, Fetched: 12 row(s)
+
+
+
+6. To check if young members use mobile phones or computers for facebook browsing
+
+i.) To find the count of young members using mobile phones
+
+Code:
+select count(*) from facebook_data where age <= 35 and mobile_likes>=1;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0026, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0026/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0026
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 16:11:44,696 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 16:12:07,464 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.21 sec
+2020-10-03 16:12:29,067 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 7.17 sec
+MapReduce Total cumulative CPU time: 7 seconds 170 msec
+Ended Job = job_1601735549002_0026
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 7.17 sec   HDFS Read: 5227759 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 7 seconds 170 msec
+OK
+40866
+Time taken: 69.224 seconds, Fetched: 1 row(s) 
+
+
+ii.) To find the count of young members using computers
+
+Code:
+select count(*) from facebook_data where age <= 35 and www_likes>=1;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0027, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0027/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0027
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 16:13:28,102 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 16:13:56,163 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 5.14 sec
+2020-10-03 16:14:18,895 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 8.26 sec
+MapReduce Total cumulative CPU time: 8 seconds 260 msec
+Ended Job = job_1601735549002_0027
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 8.26 sec   HDFS Read: 5227759 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 8 seconds 260 msec
+OK
+20461
+Time taken: 77.978 seconds, Fetched: 1 row(s)
+
+
+Conclusion:
+The total number of young members that use mobile and computer for facebook browsing is 40,866 and 20461, respectively. So, we can conclude that most of the young members use mobile phones for facebook browsing.
+
+
+
+7. To check if young members use mobile phones or computers for facebook browsing
+
+i.) To find the count of older members using mobile phones
+
+Code:
+select count(*) from facebook_data where age >= 55 and mobile_likes>=1;
+
+
+Hive select Query triggering MapReduce Job:
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0028, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0028/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0028
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 16:16:58,799 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 16:17:24,960 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.75 sec
+2020-10-03 16:17:49,959 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 8.16 sec
+MapReduce Total cumulative CPU time: 8 seconds 160 msec
+Ended Job = job_1601735549002_0028 
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 8.16 sec   HDFS Read: 5227589 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 8 seconds 160 msec
+OK
+11491
+Time taken: 82.793 seconds, Fetched: 1 row(s)
+
+
+ii.) To find the count of older members using mobile phones
+
+Code:
+select count(*) from facebook_data where age >= 55 and www_likes>=1;
+
+
+Hive select Query triggering MapReduce Job: 
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1601735549002_0029, Tracking URL = http://quickstart.cloudera:8088/proxy/application_1601735549002_0029/
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_1601735549002_0029
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2020-10-03 16:18:56,720 Stage-1 map = 0%,  reduce = 0%
+2020-10-03 16:19:28,239 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 5.72 sec
+2020-10-03 16:19:58,129 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 9.65 sec
+MapReduce Total cumulative CPU time: 9 seconds 650 msec
+Ended Job = job_1601735549002_0029
+
+
+Output:
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 9.65 sec   HDFS Read: 5227589 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 9 seconds 650 msec
+OK
+10660
+
+
+Conclusion:
+The total number of older members that use mobile and computer for facebook browsing is 11491 and 10660, respectively. So, we can conclude that the older members use both mobile phones and computer for facebook browsing.
+
